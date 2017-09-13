@@ -4,8 +4,7 @@
 #include <cublas_v2.h>
 #include <sys/timeb.h>
 
-#define m 3
-#define n m
+#define n 3
 
 void Allocate_Memory();
 void Init();

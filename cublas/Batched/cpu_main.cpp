@@ -18,9 +18,9 @@ int main()
 	Allocate_Memory();
 	Init();
 	printf("A = \n");
-        for(i=0;i<m;i++){
+        for(i=0;i<n;i++){
                 for(j=0;j<n;j++){
-                        printf("%f ",A[i+j*m]);
+                        printf("%f ",A[i+j*n]);
                 }
                 printf("\n");
         }
@@ -46,22 +46,22 @@ int main()
         }
 
 	printf("C = \n");
-	for(i=0;i<m;i++){
+	for(i=0;i<n;i++){
 		for(j=0;j<n;j++){
-			printf("%f ",C[i+j*m]);
+			printf("%f ",C[i+j*n]);
 		}
                 printf("\n");
 	}
 
 	printf("A = \n");
-        for(i=0;i<m;i++){
+        for(i=0;i<n;i++){
                 for(j=0;j<n;j++){
-                        printf("%f ",A[i+j*m]);
+                        printf("%f ",A[i+j*n]);
                 }
                 printf("\n");
         }
 	printf("PivotA = \n");
-        for(i=0;i<m;i++){
+        for(i=0;i<n;i++){
                 printf("%f ",h_PivotA[i]);
         }
 	printf("\n");

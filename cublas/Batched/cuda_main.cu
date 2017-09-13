@@ -29,18 +29,18 @@ float ** d_Cpoint;
 void Allocate_Memory(){
 	cudaError_t Error;
 
-	A = (float *)malloc(m*n*sizeof(float));
+	A = (float *)malloc(n*n*sizeof(float));
 	b = (float *)malloc(n*sizeof(float));
 	x = (float *)malloc(n*sizeof(float));
-	C = (float *)malloc(m*n*sizeof(float));
+	C = (float *)malloc(n*n*sizeof(float));
 
-	Error = cudaMalloc((void **)&d_A, m*n*sizeof(float));
+	Error = cudaMalloc((void **)&d_A, n*n*sizeof(float));
 	printf("CUDA error(malloc d_A) = %s\n",cudaGetErrorString(Error));
 	Error = cudaMalloc((void **)&d_b, n*sizeof(float));
         printf("CUDA error(malloc d_b) = %s\n",cudaGetErrorString(Error));
 	Error = cudaMalloc((void **)&d_x, n*sizeof(float));
         printf("CUDA error(malloc d_x) = %s\n",cudaGetErrorString(Error));
-	Error = cudaMalloc((void **)&d_C, m*n*sizeof(float));
+	Error = cudaMalloc((void **)&d_C, n*n*sizeof(float));
         printf("CUDA error(malloc d_C) = %s\n",cudaGetErrorString(Error));
 
 	h_PivotA = (int *)malloc(n*batchsize*sizeof(int));
@@ -61,32 +61,32 @@ void Allocate_Memory(){
 void Init(){
 	int i, j;
 	for(j=0;j<n;j++){
-		for(i=0;i<m;i++){
-			A[i+j*m] = int(rand()%10);
+		for(i=0;i<n;i++){
+			A[i+j*n] = int(rand()%10);
 		}
 	}
 	for(i=0;i<n;i++){
 		b[i] = int(rand()%10);
 		x[i] = 0.0;
 	}
-	for(i=0;i<m*n;i++){
+	for(i=0;i<n*n;i++){
 		C[i] = 0.0;
 	}
 	alpha = 1.0, beta = 0.0;
 
 	for(i=0;i<batchsize;i++){
-		h_Apoint[0] = d_A + i*m*n;
-		h_Cpoint[0] = (float *)((char*)d_C+i*((size_t)m*n)*sizeof(float));
+		h_Apoint[0] = d_A + i*n*n;
+		h_Cpoint[0] = (float *)((char*)d_C+i*((size_t)n*n)*sizeof(float));
 	}
 }
 
 void Send_To_Device(){
 	cudaError_t Error;
-	Error = cudaMemcpy(d_A, A, m*n*sizeof(float), cudaMemcpyHostToDevice);
+	Error = cudaMemcpy(d_A, A, n*n*sizeof(float), cudaMemcpyHostToDevice);
 	printf("CUDA error(memcpy A) = %s\n",cudaGetErrorString(Error));
 	Error = cudaMemcpy(d_b, b, n*sizeof(float), cudaMemcpyHostToDevice);
         printf("CUDA error(memcpy b) = %s\n",cudaGetErrorString(Error));
-	Error = cudaMemcpy(d_C, C, m*n*sizeof(float), cudaMemcpyHostToDevice);
+	Error = cudaMemcpy(d_C, C, n*n*sizeof(float), cudaMemcpyHostToDevice);
         printf("CUDA error(memcpy C) = %s\n",cudaGetErrorString(Error));
 
 	Error = cudaMemcpy(d_Apoint, h_Apoint, batchsize*sizeof(float*), cudaMemcpyHostToDevice);
@@ -102,30 +102,30 @@ void Call_GPUFunction(){
 	}
 
 	cublasSgetrfBatched( handle,
-		m,
+		n,
 		d_Apoint,
-		m,
+		n,
 		PivotA,
 		infoA,
 		batchsize);
 
 	cublasSgetriBatched( handle,
-		m,
+		n,
 		(const float **)d_Apoint,
-		m,
+		n,
 		PivotA,
 		d_Cpoint,
-		m,
+		n,
 		infoA,
 		batchsize);
 
 	cublasSgemv(  handle,
                 CUBLAS_OP_N,
-                m,
+                n,
                 n,
                 &alpha,
                 d_C,
-                m,
+                n,
                 d_b,
                 1,
                 &beta,
@@ -141,9 +141,9 @@ void Send_To_Host(){
 	Error = cudaMemcpy(x, d_x, n*sizeof(float), cudaMemcpyDeviceToHost);
         printf("CUDA error(memcpy d_x->x) = %s\n",cudaGetErrorString(Error));
 
-	Error = cudaMemcpy(C, d_C, m*n*sizeof(float), cudaMemcpyDeviceToHost);
+	Error = cudaMemcpy(C, d_C, n*n*sizeof(float), cudaMemcpyDeviceToHost);
         printf("CUDA error(memcpy d_C->C) = %s\n",cudaGetErrorString(Error));
-	Error = cudaMemcpy(A, d_A, m*n*sizeof(float), cudaMemcpyDeviceToHost);
+	Error = cudaMemcpy(A, d_A, n*n*sizeof(float), cudaMemcpyDeviceToHost);
         printf("CUDA error(memcpy d_A->A) = %s\n",cudaGetErrorString(Error));
 	Error = cudaMemcpy(h_PivotA, PivotA, n*batchsize*sizeof(int), cudaMemcpyDeviceToHost);
         printf("CUDA error(memcpy PivotA) = %s\n",cudaGetErrorString(Error));
@@ -184,8 +184,7 @@ void Save_Result() {
 	pFile = fopen("x.txt","w");
         // Save the vector x
         for (i = 0; i < n; i++) {
-		fprintf(pFile, "%g\t", x[i]);
-		fprintf(pFile, "\n");
+		fprintf(pFile, "%g\n", x[i]);
         }
         fclose(pFile);
 }
