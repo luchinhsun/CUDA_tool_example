@@ -52,7 +52,7 @@ int main(){
 		for(i=0;i<N;i++){
 			x = i/n;
 			id = i+(n+2)+1+2*x;
-			T[i] = BT[id] + 0.1*(BT[id-(n+2)] + BT[id+(n+2)] + BT[id-1] + BT[id+1]);
+			T[i] = BT[id] + 0.1*(BT[id-(n+2)] + BT[id+(n+2)] - 2*BT[id] + BT[id-1] + BT[id+1] - 2*BT[id]);
 		}
 	}
 	

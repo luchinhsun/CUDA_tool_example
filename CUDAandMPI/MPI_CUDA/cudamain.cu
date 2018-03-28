@@ -92,7 +92,7 @@ __global__ void Forward_Euler(double *d_subT, double *d_subBT){
 	if(i<subN){
 		x = i/n;
 		id = i+(n+2)+1+2*x;
-		d_subT[i] = d_subBT[id] + 0.1*(d_subBT[id-(n+2)] + d_subBT[id+(n+2)] + d_subBT[id-1] + d_subBT[id+1]);
+		d_subT[i] = d_subBT[id] + 0.1*(d_subBT[id-(n+2)] + d_subBT[id+(n+2)] + d_subBT[id-1] + d_subBT[id+1] - 4*d_subBT[id]);
 	}
 			
 }

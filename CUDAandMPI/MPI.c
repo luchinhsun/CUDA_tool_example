@@ -119,7 +119,7 @@ int main(){
 		for(i=0;i<subN;i++){
 			x = i/n;
 			id = i+(n+2)+1+2*x;
-			subT[i] = subBT[id] + 0.1*(subBT[id-(n+2)] + subBT[id+(n+2)] + subBT[id-1] + subBT[id+1]);
+			subT[i] = subBT[id] + 0.1*(subBT[id-(n+2)] + subBT[id+(n+2)] + subBT[id-1] + subBT[id+1] - 4*subBT[id]);
 		}
 	}
 
